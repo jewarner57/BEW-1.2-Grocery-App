@@ -3,6 +3,7 @@ from sqlalchemy_utils import URLType
 from grocery_app import db
 from grocery_app.utils import FormEnum
 
+
 class ItemCategory(FormEnum):
     """Categories of grocery items."""
     PRODUCE = 'Produce'
@@ -12,12 +13,20 @@ class ItemCategory(FormEnum):
     FROZEN = 'Frozen'
     OTHER = 'Other'
 
+
 class GroceryStore(db.Model):
     """Grocery Store model."""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), nullable=False)
     address = db.Column(db.String(200), nullable=False)
     items = db.relationship('GroceryItem', back_populates='store')
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return self.title
+
 
 class GroceryItem(db.Model):
     """Grocery Item model."""
@@ -29,3 +38,9 @@ class GroceryItem(db.Model):
     store_id = db.Column(
         db.Integer, db.ForeignKey('grocery_store.id'), nullable=False)
     store = db.relationship('GroceryStore', back_populates='items')
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.name

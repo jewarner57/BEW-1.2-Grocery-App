@@ -38,7 +38,7 @@ def new_store():
         db.session.commit()
 
         flash(f"Successfully Created Store: {form.title.data}")
-        return redirect(url_for("homepage"))
+        return redirect(url_for("main.homepage"))
 
     # Sends the form to the template and use it to render the form fields
     return render_template('new_store.html', form=form)

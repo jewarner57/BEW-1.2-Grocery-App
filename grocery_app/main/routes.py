@@ -2,6 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for, flash
 from datetime import date, datetime
 from grocery_app.models import GroceryStore, GroceryItem
 from grocery_app.forms import GroceryStoreForm, GroceryItemForm
+from flask_login import login_required, current_user
 
 # Import app and db from events_app package so that we can run app
 from grocery_app import app, db
@@ -21,6 +22,7 @@ def homepage():
     return render_template('home.html', all_stores=all_stores)
 
 
+@login_required
 @main.route('/new_store', methods=['GET', 'POST'])
 def new_store():
     """Gets the create store form."""
@@ -33,7 +35,7 @@ def new_store():
     # - redirect the user to the store detail page.
     if form.validate_on_submit():
         new_store = GroceryStore(
-            title=form.title.data, address=form.address.data)
+            title=form.title.data, address=form.address.data, created_by=current_user)
         db.session.add(new_store)
         db.session.commit()
 
@@ -44,6 +46,7 @@ def new_store():
     return render_template('new_store.html', form=form)
 
 
+@login_required
 @main.route('/new_item', methods=['GET', 'POST'])
 def new_item():
     """Gets the create item page."""
@@ -57,7 +60,7 @@ def new_item():
 
     if form.validate_on_submit():
         new_item = GroceryItem(name=form.name.data, price=form.price.data,
-                               category=form.category.data, photo_url=form.photo_url.data, store=form.store.data)
+                               category=form.category.data, photo_url=form.photo_url.data, store=form.store.data, created_by=current_user)
         db.session.add(new_item)
         db.session.commit()
 
@@ -70,6 +73,7 @@ def new_item():
     return render_template('new_item.html', form=form)
 
 
+@login_required
 @main.route('/store/<store_id>', methods=['GET', 'POST'])
 def store_detail(store_id):
     """Gets the store detail page."""
@@ -81,7 +85,7 @@ def store_detail(store_id):
     # - updates the GroceryStore object and save it to the database,
     # - flashes a success message, and
     # - redirects the user to the store detail page.
-    if form.validate_on_submit():
+    if form.validate_on_submit() and current_user.id == store.created_by_id:
         store.title = form.title.data
         store.address = form.address.data
 
@@ -93,6 +97,7 @@ def store_detail(store_id):
     return render_template('store_detail.html', form=form, store=store)
 
 
+@login_required
 @main.route('/item/<item_id>', methods=['GET', 'POST'])
 def item_detail(item_id):
     """Gets the item detail page."""
@@ -104,7 +109,7 @@ def item_detail(item_id):
     # - updates the GroceryItem object and save it to the database,
     # - flashes a success message, and
     # - redirects the user to the item detail page.
-    if form.validate_on_submit():
+    if form.validate_on_submit() and current_user.id == item.created_by_id:
 
         item.name = form.name.data
         item.price = form.price.data

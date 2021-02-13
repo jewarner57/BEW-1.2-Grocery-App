@@ -5,6 +5,8 @@
 
 <strong>Address:</strong> {{ store.address }}
 
+<p><strong>Created By:</strong> {{store.created_by.username}}</p>
+
 <h2>Items</h2>
 
 <div class="items">
@@ -18,7 +20,7 @@
     {% endfor %}
 </div>
 
-
+{% if current_user.id == store.created_by_id%}
 <h2>Edit Store</h2>
 
 <form method="POST" action="/store/{{store.id}}">
@@ -49,5 +51,6 @@
         <input type="submit" value="Submit">
     </fieldset>
 </form>
+{% endif %}
 
 {% endblock %}

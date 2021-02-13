@@ -18,12 +18,11 @@ main = Blueprint("main", __name__)
 def homepage():
     """Gets the homepage."""
     all_stores = GroceryStore.query.all()
-    print(all_stores)
     return render_template('home.html', all_stores=all_stores)
 
 
-@login_required
 @main.route('/new_store', methods=['GET', 'POST'])
+@login_required
 def new_store():
     """Gets the create store form."""
     # Creates a GroceryStoreForm
@@ -46,8 +45,9 @@ def new_store():
     return render_template('new_store.html', form=form)
 
 
-@login_required
+
 @main.route('/new_item', methods=['GET', 'POST'])
+@login_required
 def new_item():
     """Gets the create item page."""
     # Creates a GroceryItemForm
@@ -73,8 +73,9 @@ def new_item():
     return render_template('new_item.html', form=form)
 
 
-@login_required
+
 @main.route('/store/<store_id>', methods=['GET', 'POST'])
+@login_required
 def store_detail(store_id):
     """Gets the store detail page."""
     store = GroceryStore.query.get(store_id)
@@ -97,8 +98,8 @@ def store_detail(store_id):
     return render_template('store_detail.html', form=form, store=store)
 
 
-@login_required
 @main.route('/item/<item_id>', methods=['GET', 'POST'])
+@login_required
 def item_detail(item_id):
     """Gets the item detail page."""
     item = GroceryItem.query.get(item_id)
@@ -123,3 +124,36 @@ def item_detail(item_id):
     # Sends the form to the template and use it to render the form fields
     item = GroceryItem.query.get(item_id)
     return render_template('item_detail.html', form=form, item=item)
+
+
+@main.route('/add_to_shopping_list/<item_id>', methods=['POST'])
+@login_required
+def add_to_shopping_list(item_id):
+    user = current_user
+    item = GroceryItem.query.get(item_id)
+
+    user.shopping_list_items.append(item)
+
+    db.session.add(user)
+    db.session.commit()
+
+    return redirect(url_for('main.shopping_list'))
+
+@main.route('/remove_from_shopping_list/<item_id>', methods=['POST'])
+@login_required
+def remove_from_shopping_list(item_id):
+    user = current_user
+    item = GroceryItem.query.get(item_id)
+
+    user.shopping_list_items.remove(item)
+
+    db.session.add(user)
+    db.session.commit()
+
+    return redirect(url_for('main.shopping_list'))
+
+
+@main.route('/shopping_list')
+@login_required
+def shopping_list():
+    return render_template('shopping_list.html')

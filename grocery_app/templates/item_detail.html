@@ -13,6 +13,14 @@
 
 <p><strong>Created By:</strong> {{item.created_by.username}}</p>
 
+{% if not current_user.is_anonymous %}
+<form action="/add_to_shopping_list/{{item.id}}" method="post">
+    <input type="submit" name="add_item" value="Add To List" />
+</form>
+<form action="/remove_from_shopping_list/{{item.id}}" method="post">
+    <input type="submit" name="remove_item" value="Remove From List" />
+</form>
+{% endif %}
 
 {% if current_user.id == item.created_by_id%}
 <h2>Edit Item</h2>

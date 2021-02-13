@@ -42,7 +42,19 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=True)
+
+            # Since the next param wasn't present with the default code I did some looking
+            # to figure out why:
+
+            # flask's next will not be present if an action is specified in the html form
+            # Ex: bad: <form action="/login" good: <form>
+
+            # alternatively you can use: action="{{ url_for('auth.login', next=request.args.get("next")) }}"
+            # which will preserve the next param
+            # https://stackoverflow.com/questions/36269485/how-do-i-pass-through-the-next-url-with-flask-and-flask-login
+            
             next_page = request.args.get('next')
+
             return redirect(next_page if next_page else url_for('main.homepage'))
     return render_template('login.html', form=form)
 

@@ -19,13 +19,14 @@
 
 
                 {% if current_user.is_authenticated %}
-                <!-- TODO: Only show these links if the current user is 
+                <!-- Only show these links if the current user is 
                                                             authenticated (logged in)! -->
                 <a href="/new_store">New Store</a>
                 <a href="/new_item">New Item</a>
+                <a href="/shopping_list">Shopping List</a>
                 <a href="/logout">Log Out</a>
                 {% else %}
-                <!-- TODO: Only show these links if the current user is NOT
+                <!-- Only show these links if the current user is NOT
                                                             authenticated (logged in)! -->
                 <a href="/signup">Sign Up</a>
                 <a href="/login">Log In</a>

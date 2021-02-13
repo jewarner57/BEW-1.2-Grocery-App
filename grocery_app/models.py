@@ -32,6 +32,8 @@ class GroceryStore(db.Model):
 
 class GroceryItem(db.Model):
     """Grocery Item model."""
+    __tablename__ = "groceryitem"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     price = db.Column(db.Float(precision=2), nullable=False)
@@ -42,6 +44,7 @@ class GroceryItem(db.Model):
     store = db.relationship('GroceryStore', back_populates='items')
     created_by_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     created_by = db.relationship('User')
+    on_users_shopping_list = db.relationship('User', secondary='shopping_list', back_populates="shopping_list_items")
 
     def __str__(self):
         return self.name
@@ -53,3 +56,11 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
     password = db.Column(db.String(200), nullable=False)
+    shopping_list_items = db.relationship('GroceryItem', secondary="shopping_list", back_populates='on_users_shopping_list')
+
+shopping_list_table = db.Table('shopping_list',
+                                     db.Column('user_id', db.Integer,
+                                               db.ForeignKey('user.id')),
+                                     db.Column('item_id', db.Integer,
+                                               db.ForeignKey('groceryitem.id'))
+                                     )
